@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import dotenv from 'dotenv';
 import passport from './config/passport';
 import authRoutes from './routes/auth';
+import clientRoutes from './routes/clients';
 import logger from './lib/logger';
 import { errorHandler } from './middleware/errorHandler';
 import {
@@ -93,6 +94,9 @@ app.get('/health', (req, res) => {
 
 // Authentication routes
 app.use('/auth', authRoutes);
+
+// API routes
+app.use('/api/clients', clientRoutes);
 
 // API routes placeholder
 app.get('/api', (req, res) => {

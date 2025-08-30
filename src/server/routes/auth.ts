@@ -218,4 +218,69 @@ router.post(
   }
 );
 
+// Test login endpoint (only available in test environment)
+if (process.env.NODE_ENV === 'test') {
+  router.post('/test-login', async (req: Request, res: Response) => {
+    try {
+      const { userId } = req.body;
+
+      if (!userId) {
+        return res.status(400).json({
+          success: false,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'userId is required',
+          },
+        });
+      }
+
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+      });
+
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          error: {
+            code: 'USER_NOT_FOUND',
+            message: 'User not found',
+          },
+        });
+      }
+
+      const token = generateToken({
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role as 'admin' | 'consultant',
+        provider: user.provider,
+        providerId: user.providerId,
+      });
+
+      res.json({
+        success: true,
+        data: {
+          token,
+          user: {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+            provider: user.provider,
+          },
+        },
+      });
+    } catch (error) {
+      console.error('Test login error:', error);
+      res.status(500).json({
+        success: false,
+        error: {
+          code: 'INTERNAL_ERROR',
+          message: 'Failed to generate test token',
+        },
+      });
+    }
+  });
+}
+
 export default router;
