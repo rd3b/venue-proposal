@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import passport from './config/passport';
 import authRoutes from './routes/auth';
 import clientRoutes from './routes/clients';
+import venueRoutes from './routes/venues';
 import logger from './lib/logger';
 import { errorHandler } from './middleware/errorHandler';
 import {
@@ -97,6 +98,7 @@ app.use('/auth', authRoutes);
 
 // API routes
 app.use('/api/clients', clientRoutes);
+app.use('/api/venues', venueRoutes);
 
 // API routes placeholder
 app.get('/api', (req, res) => {
