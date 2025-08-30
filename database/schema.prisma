@@ -1,0 +1,151 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  email      String   @unique
+  name       String
+  role       String   @default("consultant")
+  provider   String
+  providerId String   @map("provider_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  clients           Client[]
+  venues            Venue[]
+  proposals         Proposal[]
+  bookings          Booking[]
+  commissionClaims  CommissionClaim[]
+
+  @@map("users")
+}
+
+model Client {
+  id          Int      @id @default(autoincrement())
+  name        String
+  company     String?
+  contactName String?  @map("contact_name")
+  email       String?
+  phone       String?
+  notes       String?
+  createdBy   Int      @map("created_by")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  createdByUser User       @relation(fields: [createdBy], references: [id])
+  proposals     Proposal[]
+  bookings      Booking[]
+
+  @@map("clients")
+}
+
+model Venue {
+  id                 Int      @id @default(autoincrement())
+  name               String
+  location           String?
+  contactName        String?  @map("contact_name")
+  email              String?
+  phone              String?
+  standardCommission Decimal  @default(0.00) @map("standard_commission") @db.Decimal(5, 2)
+  notes              String?
+  createdBy          Int      @map("created_by")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  createdByUser   User             @relation(fields: [createdBy], references: [id])
+  proposalVenues  ProposalVenue[]
+  bookings        Booking[]
+
+  @@map("venues")
+}mod
+el Proposal {
+  id                 Int      @id @default(autoincrement())
+  clientId           Int      @map("client_id")
+  createdBy          Int      @map("created_by")
+  status             String   @default("draft")
+  totalValue         Decimal  @default(0.00) @map("total_value") @db.Decimal(10, 2)
+  expectedCommission Decimal  @default(0.00) @map("expected_commission") @db.Decimal(10, 2)
+  notes              String?
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  client         Client          @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  createdByUser  User            @relation(fields: [createdBy], references: [id])
+  venues         ProposalVenue[]
+  bookings       Booking[]
+
+  @@map("proposals")
+}
+
+model ProposalVenue {
+  id                 Int      @id @default(autoincrement())
+  proposalId         Int      @map("proposal_id")
+  venueId            Int      @map("venue_id")
+  chargeLines        Json     @default("[]") @map("charge_lines")
+  commissionOverride Decimal? @map("commission_override") @db.Decimal(5, 2)
+  notes              String?
+  createdAt          DateTime @default(now()) @map("created_at")
+
+  // Relations
+  proposal Proposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  venue    Venue    @relation(fields: [venueId], references: [id], onDelete: Cascade)
+
+  @@map("proposal_venues")
+}
+
+model Booking {
+  id               Int       @id @default(autoincrement())
+  proposalId       Int       @map("proposal_id")
+  clientId         Int       @map("client_id")
+  venueId          Int       @map("venue_id")
+  status           String    @default("draft")
+  optionExpiry     DateTime? @map("option_expiry") @db.Date
+  totalValue       Decimal   @default(0.00) @map("total_value") @db.Decimal(10, 2)
+  commissionAmount Decimal   @default(0.00) @map("commission_amount") @db.Decimal(10, 2)
+  signedDocs       Json      @default("[]") @map("signed_docs")
+  createdBy        Int       @map("created_by")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  proposal         Proposal          @relation(fields: [proposalId], references: [id])
+  client           Client            @relation(fields: [clientId], references: [id])
+  venue            Venue             @relation(fields: [venueId], references: [id])
+  createdByUser    User              @relation(fields: [createdBy], references: [id])
+  commissionClaims CommissionClaim[]
+
+  @@map("bookings")
+}
+
+model CommissionClaim {
+  id            Int       @id @default(autoincrement())
+  bookingId     Int       @map("booking_id")
+  amount        Decimal   @db.Decimal(10, 2)
+  status        String    @default("draft")
+  sentDate      DateTime? @map("sent_date") @db.Date
+  paidDate      DateTime? @map("paid_date") @db.Date
+  invoiceNumber String?   @map("invoice_number")
+  notes         String?
+  createdBy     Int       @map("created_by")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  booking       Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  createdByUser User    @relation(fields: [createdBy], references: [id])
+
+  @@map("commission_claims")
+}
