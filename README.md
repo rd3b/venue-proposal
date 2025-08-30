@@ -554,14 +554,122 @@ CLIENT_URL=https://your-production-domain.com
 
 ## 📝 API Documentation
 
-### Authentication Endpoints
+### Core API Infrastructure
+
+The Venue Finder CRM API is built with Express.js and TypeScript, featuring comprehensive middleware for security, validation, error handling, and logging.
+
+#### API Base URL
+
+- **Development**: `http://localhost:5000`
+- **Production**: `https://your-domain.com`
+
+#### Health Check
+
+- `GET /health` - Returns server status and timestamp
+
+```json
+{
+  "status": "OK",
+  "timestamp": "2024-01-01T12:00:00.000Z"
+}
+```
+
+#### Response Format
+
+All API responses follow a consistent structure:
+
+**Success Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    /* response data */
+  },
+  "meta": {
+    /* pagination/metadata (optional) */
+  },
+  "timestamp": "2024-01-01T12:00:00.000Z"
+}
+```
+
+**Error Response:**
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "Human readable error message",
+    "field": "fieldName", // for validation errors
+    "details": {
+      /* additional error details */
+    }
+  },
+  "timestamp": "2024-01-01T12:00:00.000Z",
+  "path": "/api/endpoint"
+}
+```
+
+#### Security Features
+
+- **CORS**: Configured for allowed origins with credentials support
+- **Helmet**: Security headers including CSP, XSS protection, and frame options
+- **Rate Limiting**:
+  - General API: 100 requests per 15 minutes
+  - Authentication: 10 requests per 15 minutes
+  - File uploads: 20 requests per hour
+- **Request Size Limits**: 10MB maximum payload size
+- **Security Headers**: Custom headers for API versioning and request tracking
+
+#### Error Handling
+
+The API provides comprehensive error handling with specific error codes:
+
+- `BAD_REQUEST` (400) - Invalid request data or malformed JSON
+- `UNAUTHORIZED` (401) - Authentication required or invalid token
+- `FORBIDDEN` (403) - Insufficient permissions
+- `NOT_FOUND` (404) - Resource not found
+- `CONFLICT` (409) - Resource conflict (e.g., duplicate entries)
+- `UNPROCESSABLE_ENTITY` (422) - Validation errors
+- `PAYLOAD_TOO_LARGE` (413) - Request body exceeds size limit
+- `RATE_LIMIT_EXCEEDED` (429) - Too many requests
+- `INTERNAL_ERROR` (500) - Server error
+
+#### Request Validation
+
+All API endpoints use Joi schema validation for:
+
+- **Request Body**: JSON payload validation
+- **Query Parameters**: Search, pagination, and filter validation
+- **Route Parameters**: ID and path parameter validation
+
+Common validation schemas:
+
+- ID validation: Positive integers
+- Pagination: Page (min 1), limit (1-100), search strings
+- Sorting: Field names and order (asc/desc)
+
+#### Logging
+
+The API uses Winston for structured logging:
+
+- **HTTP Requests**: Method, URL, status, duration, IP, user agent
+- **Errors**: Stack traces, request context, user information
+- **Security Events**: Rate limiting, CORS violations, authentication failures
+- **Log Levels**: error, warn, info, http, debug
+
+**Development**: Console output with colors
+**Production**: File-based logging with rotation (error.log, combined.log)
+
+#### Authentication Endpoints
 
 - `POST /auth/google` - Google OAuth callback
 - `POST /auth/microsoft` - Microsoft OAuth callback
 - `POST /auth/logout` - User logout
 - `GET /auth/me` - Current user profile
 
-### Core API Endpoints
+#### Core API Endpoints
 
 - `GET /api/clients` - List clients with pagination/search
 - `POST /api/clients` - Create new client
@@ -572,7 +680,61 @@ CLIENT_URL=https://your-production-domain.com
 - `GET /api/bookings` - List bookings with filters
 - `POST /api/bookings` - Create booking from proposal
 
-See the design document for complete API specification.
+#### Pagination
+
+List endpoints support pagination with the following query parameters:
+
+- `page` (default: 1) - Page number
+- `limit` (default: 20, max: 100) - Items per page
+- `search` - Search term for filtering
+- `sortBy` - Field to sort by
+- `sortOrder` (default: desc) - Sort direction (asc/desc)
+
+**Response Headers:**
+
+- `X-Total-Count` - Total number of items
+- `X-Page-Count` - Total number of pages
+
+#### API Testing
+
+The API includes comprehensive test coverage:
+
+- **Unit Tests**: Business logic and utilities
+- **Integration Tests**: API endpoints with test database
+- **Security Tests**: Rate limiting, CORS, validation
+- **Error Handling Tests**: All error scenarios
+
+Run API tests:
+
+```bash
+npm test -- --testPathPattern=server
+```
+
+#### Development Tools
+
+**API Testing with curl:**
+
+```bash
+# Health check
+curl http://localhost:5000/health
+
+# Test rate limiting
+for i in {1..15}; do curl http://localhost:5000/api; done
+
+# Test validation
+curl -X POST http://localhost:5000/api/test \
+  -H "Content-Type: application/json" \
+  -d '{"invalid": "data"}'
+```
+
+**Using with Postman:**
+
+1. Import the API collection (if available)
+2. Set base URL to `http://localhost:5000`
+3. Configure authentication headers
+4. Test endpoints with various payloads
+
+See the design document for complete API specification and data models.
 
 ## 🐛 Troubleshooting
 
