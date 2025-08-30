@@ -17,6 +17,7 @@ A comprehensive venue finding agency CRM and booking management system designed 
 ## 🛠 Technology Stack
 
 ### Frontend
+
 - **React 18** with TypeScript
 - **Material-UI (MUI)** for component library
 - **React Router** for navigation
@@ -25,6 +26,7 @@ A comprehensive venue finding agency CRM and booking management system designed 
 - **Vite** for build tooling
 
 ### Backend
+
 - **Node.js** with Express.js
 - **TypeScript** for type safety
 - **Prisma ORM** with PostgreSQL
@@ -33,6 +35,7 @@ A comprehensive venue finding agency CRM and booking management system designed 
 - **PDFKit** for document generation
 
 ### Database
+
 - **PostgreSQL 14+**
 - **Prisma** for database operations and migrations
 
@@ -57,11 +60,13 @@ cd venue-finder-crm
 ### 2. Install Dependencies
 
 Install root dependencies:
+
 ```bash
 npm install
 ```
 
 Install client dependencies:
+
 ```bash
 cd src/client
 npm install
@@ -73,6 +78,7 @@ cd ../..
 Create environment files:
 
 **.env** (root directory):
+
 ```env
 # Database
 DATABASE_URL="postgresql://username:password@localhost:5432/venue_finder_crm"
@@ -97,6 +103,7 @@ CLIENT_URL=http://localhost:3000
 ```
 
 **.env.test** (for testing):
+
 ```env
 DATABASE_URL="postgresql://username:password@localhost:5432/venue_finder_crm_test"
 NODE_ENV=test
@@ -105,30 +112,97 @@ JWT_SECRET=test-jwt-secret
 
 ### 4. Database Setup
 
-Create the database:
+#### Install PostgreSQL
+
+On macOS using Homebrew:
+
 ```bash
-createdb venue_finder_crm
-createdb venue_finder_crm_test  # for testing
+brew install postgresql@14
+brew services start postgresql@14
 ```
 
+On Ubuntu/Debian:
+
+```bash
+sudo apt update
+sudo apt install postgresql postgresql-contrib
+sudo systemctl start postgresql
+sudo systemctl enable postgresql
+```
+
+#### Create Databases
+
+Create the main database and test database:
+
+```bash
+# On macOS (after installing via Homebrew)
+export PATH="/opt/homebrew/opt/postgresql@14/bin:$PATH"
+createdb venue_finder_crm
+createdb venue_finder_crm_test
+
+# On Linux (using default postgres user)
+sudo -u postgres createdb venue_finder_crm
+sudo -u postgres createdb venue_finder_crm_test
+```
+
+#### Configure Database Connection
+
+Update your `.env` file with the correct database URL:
+
+```env
+# For macOS with Homebrew PostgreSQL
+DATABASE_URL="postgresql://yourusername@localhost:5432/venue_finder_crm"
+
+# For Linux with default PostgreSQL setup
+DATABASE_URL="postgresql://postgres:yourpassword@localhost:5432/venue_finder_crm"
+```
+
+#### Initialize Database Schema
+
 Generate Prisma client:
+
 ```bash
 npm run db:generate
 ```
 
 Run database migrations:
+
 ```bash
 npm run db:migrate
 ```
 
 Seed the database with sample data:
+
 ```bash
 npm run db:seed
 ```
 
+#### Setup Test Database
+
+For running tests, set up the test database:
+
+```bash
+npm run db:test-setup
+```
+
+#### Verify Database Setup
+
+Run the database verification script:
+
+```bash
+npm run db:verify
+```
+
+This will check:
+
+- Database connection
+- Schema integrity (all 7 tables)
+- Sample data presence
+
 ### 5. Start Development Servers
 
 Start both frontend and backend in development mode:
+
 ```bash
 npm run dev
 ```
@@ -136,16 +210,19 @@ npm run dev
 Or start them separately:
 
 Backend only:
+
 ```bash
 npm run dev:server
 ```
 
 Frontend only:
+
 ```bash
 npm run dev:client
 ```
 
 The application will be available at:
+
 - **Frontend**: http://localhost:3000
 - **Backend API**: http://localhost:5000
 - **API Health Check**: http://localhost:5000/health
@@ -176,7 +253,7 @@ venue-finder-crm/
 │   │   └── index.ts            # Server entry point
 │   └── shared/                 # Shared types and utilities
 │       └── types/              # Shared TypeScript types
-├── database/
+├── prisma/
 │   ├── schema.prisma           # Prisma database schema
 │   └── seed.ts                 # Database seed script
 ├── dist/                       # Built application files
@@ -194,22 +271,26 @@ venue-finder-crm/
 ## 🧪 Testing
 
 Run all tests:
+
 ```bash
 npm test
 ```
 
 Run tests in watch mode:
+
 ```bash
 npm run test:watch
 ```
 
 Run client tests:
+
 ```bash
 cd src/client
 npm run test
 ```
 
 Run client tests in watch mode:
+
 ```bash
 cd src/client
 npm run test:watch
@@ -218,21 +299,25 @@ npm run test:watch
 ## 🏗 Building for Production
 
 Build the entire application:
+
 ```bash
 npm run build
 ```
 
 Build server only:
+
 ```bash
 npm run build:server
 ```
 
 Build client only:
+
 ```bash
 npm run build:client
 ```
 
 Start production server:
+
 ```bash
 npm start
 ```
@@ -242,21 +327,25 @@ npm start
 ### Code Quality
 
 Format code with Prettier:
+
 ```bash
 npm run format
 ```
 
 Check code formatting:
+
 ```bash
 npm run format:check
 ```
 
 Lint code with ESLint:
+
 ```bash
 npm run lint
 ```
 
 Fix linting issues:
+
 ```bash
 npm run lint:fix
 ```
@@ -264,16 +353,19 @@ npm run lint:fix
 ### Database Operations
 
 Create a new migration:
+
 ```bash
 npx prisma migrate dev --name migration-name
 ```
 
 Reset database:
+
 ```bash
 npx prisma migrate reset
 ```
 
 View database in Prisma Studio:
+
 ```bash
 npx prisma studio
 ```
@@ -304,16 +396,116 @@ npx prisma studio
 
 ## 📊 Database Schema
 
-The application uses PostgreSQL with the following main entities:
+The application uses PostgreSQL with Prisma ORM. The database schema includes the following main entities:
 
-- **Users**: System users with role-based access
-- **Clients**: Customer information and contact details
-- **Venues**: Venue database with commission rates
-- **Proposals**: Client proposals with multiple venue options
-- **Bookings**: Booking workflow management
-- **Commission Claims**: Commission tracking and payment status
+### Core Tables
 
-See `database/schema.prisma` for the complete schema definition.
+#### Users
+
+- **Purpose**: System authentication and user management
+- **Key Fields**: email, name, role (admin/consultant), OAuth provider info
+- **Relations**: One-to-many with all other entities as creator
+
+#### Clients
+
+- **Purpose**: Customer information and contact management
+- **Key Fields**: name, company, contact details, notes
+- **Relations**: One-to-many with proposals and bookings
+- **Constraints**: Cannot be deleted if active proposals/bookings exist
+
+#### Venues
+
+- **Purpose**: Venue database with commission and contact information
+- **Key Fields**: name, location, contact details, standard commission rate
+- **Relations**: Many-to-many with proposals, one-to-many with bookings
+- **Constraints**: Cannot be deleted if active proposals/bookings exist
+
+#### Proposals
+
+- **Purpose**: Client proposals with multiple venue options
+- **Key Fields**: client reference, status, total value, expected commission
+- **Relations**: Belongs to client, many-to-many with venues via proposal_venues
+- **Status Values**: draft, sent
+
+#### Proposal Venues (Junction Table)
+
+- **Purpose**: Links proposals to venues with specific charge lines
+- **Key Fields**: charge lines (JSON), commission override, notes
+- **Relations**: Links proposals and venues
+- **Data**: Stores itemized charges (room hire, F&B, AV, etc.)
+
+#### Bookings
+
+- **Purpose**: Booking workflow management from proposal to completion
+- **Key Fields**: status, option expiry, total value, commission amount, signed documents
+- **Relations**: References proposal, client, venue, and user
+- **Status Values**: draft, proposal_sent, option, confirmed, completed
+
+#### Commission Claims
+
+- **Purpose**: Commission tracking and payment management
+- **Key Fields**: amount, status, sent/paid dates, invoice number
+- **Relations**: Belongs to booking and user
+- **Status Values**: draft, sent, paid, overdue
+
+### Database Features
+
+- **Referential Integrity**: Foreign key constraints ensure data consistency
+- **Soft Delete Protection**: Prevents deletion of records with dependencies
+- **Audit Trail**: Created/updated timestamps on all records
+- **JSON Storage**: Flexible charge lines and document storage
+- **Decimal Precision**: Accurate financial calculations with proper decimal types
+
+### Schema Location
+
+The complete schema definition is located at:
+
+- **Schema**: `prisma/schema.prisma`
+- **Seed Data**: `prisma/seed.ts`
+
+### Database Utilities
+
+The application includes several database utilities:
+
+- **Connection Management**: `src/server/lib/database.ts`
+- **Pagination Helpers**: `src/server/lib/db-utils.ts`
+- **Error Handling**: Prisma error conversion to user-friendly messages
+- **Transaction Support**: Wrapper functions for complex operations
+- **Health Checks**: Database connectivity testing
+
+### Migration Commands
+
+```bash
+# Generate Prisma client
+npm run db:generate
+
+# Create and apply new migration
+npm run db:migrate
+
+# Seed database with sample data
+npm run db:seed
+
+# Verify database setup and health
+npm run db:verify
+
+# Setup test database schema
+npm run db:test-setup
+
+# Reset database (development only)
+npx prisma migrate reset
+
+# View data in Prisma Studio
+npx prisma studio
+
+# Create a new migration manually
+npx prisma migrate dev --name migration-name
+
+# Deploy migrations to production
+npx prisma migrate deploy
+
+# Check migration status
+npx prisma migrate status
+```
 
 ## 🚀 Deployment
 
@@ -387,21 +579,30 @@ See the design document for complete API specification.
 ### Common Issues
 
 **Database Connection Issues:**
-- Ensure PostgreSQL is running
-- Check DATABASE_URL in .env file
-- Verify database exists and user has permissions
+
+- Ensure PostgreSQL is running:
+  - macOS: `brew services list | grep postgresql`
+  - Linux: `sudo systemctl status postgresql`
+- Check DATABASE_URL in .env file matches your PostgreSQL setup
+- Verify database exists: `psql -l` (list all databases)
+- Test connection: `npm run db:verify`
+- For permission issues, ensure your user has database creation privileges
+- If using default PostgreSQL setup, you may need to create a password for the postgres user
 
 **OAuth Authentication Issues:**
+
 - Verify OAuth client IDs and secrets
 - Check redirect URIs match exactly
 - Ensure OAuth applications are properly configured
 
 **Build Issues:**
+
 - Clear node_modules and reinstall dependencies
 - Check Node.js and npm versions
 - Verify TypeScript configuration
 
 **Port Already in Use:**
+
 - Change PORT in .env file
 - Kill existing processes: `lsof -ti:5000 | xargs kill -9`
 
@@ -412,6 +613,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## 📞 Support
 
 For support and questions:
+
 - Create an issue in the repository
 - Contact the development team
 - Check the troubleshooting section above

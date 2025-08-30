@@ -1,7 +1,6 @@
 # Implementation Plan
 
 - [x] 1. Project setup and foundation
-
   - Initialize Node.js project with TypeScript configuration
   - Set up React application with TypeScript and essential dependencies
   - Configure development environment with ESLint, Prettier, and build scripts
@@ -10,8 +9,7 @@
   - Commit and push initial project setup to GitHub
   - _Requirements: 8.2, 8.4_
 
-- [ ] 2. Database setup and core models
-
+- [x] 2. Database setup and core models
   - Set up PostgreSQL database connection with Prisma ORM
   - Create database schema with all tables (users, clients, venues, proposals, proposal_venues, bookings, commission_claims)
   - Implement database migrations and seed data for development
@@ -21,7 +19,6 @@
   - _Requirements: 9.1, 9.2, 9.3_
 
 - [ ] 3. Authentication system implementation
-
   - Implement Google OAuth integration using Passport.js
   - Implement Microsoft OAuth integration using Passport.js
   - Create JWT token generation and validation middleware
@@ -31,7 +28,6 @@
   - _Requirements: 1.1, 1.2, 1.3, 1.4, 8.1, 8.5_
 
 - [ ] 4. Core API infrastructure
-
   - Set up Express.js server with TypeScript configuration
   - Implement request validation middleware using Joi or Zod
   - Create centralized error handling middleware with structured error responses
@@ -42,7 +38,6 @@
   - _Requirements: 9.4, 8.4_
 
 - [ ] 5. Client management API and database operations
-
   - Create Client model with Prisma schema validation
   - Implement CRUD operations for clients (create, read, update, delete)
   - Build API endpoints for client management (/api/clients/\*)
@@ -52,7 +47,6 @@
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5_
 
 - [ ] 6. Venue management API and database operations
-
   - Create Venue model with commission rate handling
   - Implement CRUD operations for venues with location and contact management
   - Build API endpoints for venue management (/api/venues/\*)
@@ -62,7 +56,6 @@
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5_
 
 - [ ] 7. Frontend authentication and routing setup
-
   - Create React application shell with routing using React Router
   - Implement OAuth login components for Google and Microsoft
   - Build authentication context and protected route components
@@ -72,7 +65,6 @@
   - _Requirements: 1.1, 1.2, 1.4, 8.1, 8.5_
 
 - [ ] 8. Client management frontend components
-
   - Build ClientList component with pagination, search, and filtering
   - Create ClientForm component for add/edit operations with validation
   - Implement ClientDetail component showing client profile and related data
@@ -82,7 +74,6 @@
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5_
 
 - [ ] 9. Venue management frontend components
-
   - Build VenueList component with location-based search and filtering
   - Create VenueForm component with commission rate management
   - Implement VenueDetail component with booking history display
@@ -92,7 +83,6 @@
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5_
 
 - [ ] 10. Proposal data model and API implementation
-
   - Create Proposal and ProposalVenue models with charge line JSON handling
   - Implement proposal CRUD operations with venue associations
   - Build charge line management with automatic total calculations
@@ -103,7 +93,6 @@
   - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5_
 
 - [ ] 11. Proposal builder frontend implementation
-
   - Create ProposalBuilder component with multi-step wizard interface
   - Build VenueSelector component with multi-select and search capabilities
   - Implement ChargeLineEditor for dynamic charge line management
@@ -113,7 +102,6 @@
   - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5_
 
 - [ ] 12. PDF generation system for proposals
-
   - Set up PDF generation service using PDFKit or Puppeteer
   - Create branded proposal PDF template with company styling
   - Implement proposal PDF generation API endpoint (/api/proposals/:id/pdf)
@@ -124,7 +112,6 @@
   - _Requirements: 4.6_
 
 - [ ] 13. Booking workflow data model and API
-
   - Create Booking model with status progression tracking
   - Implement booking creation from proposal conversion
   - Build booking status update API with workflow validation
@@ -135,7 +122,6 @@
   - _Requirements: 5.1, 5.2, 5.3, 5.5_
 
 - [ ] 14. Booking workflow frontend components
-
   - Create BookingWorkflow component with status progression interface
   - Build BookingDetail component with comprehensive booking information
   - Implement DocumentManager for contract upload and download
@@ -145,7 +131,6 @@
   - _Requirements: 5.1, 5.2, 5.3, 5.5_
 
 - [ ] 15. Document generation for bookings
-
   - Create venue option document PDF template
   - Implement client confirmation document generation
   - Build venue confirmation document with commission details
@@ -155,7 +140,6 @@
   - _Requirements: 5.4, 5.5_
 
 - [ ] 16. Commission claims system implementation
-
   - Create CommissionClaim model with payment status tracking
   - Implement auto-generation of commission claims from completed bookings
   - Build commission claim status management (sent/paid/overdue)
@@ -165,7 +149,6 @@
   - _Requirements: 6.1, 6.2, 6.3, 6.5_
 
 - [ ] 17. Commission claims frontend components
-
   - Build CommissionClaims component with status filtering and aging
   - Create ClaimGenerator for auto-generating claims from bookings
   - Implement PaymentTracker with status updates and payment date recording
@@ -175,7 +158,6 @@
   - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5_
 
 - [ ] 18. Reporting and dashboard implementation
-
   - Create dashboard metrics calculation API (/api/reports/dashboard)
   - Implement pipeline analysis with proposal/booking counts
   - Build commission summary reporting with expected vs received totals
@@ -185,7 +167,6 @@
   - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5_
 
 - [ ] 19. Dashboard and reporting frontend
-
   - Build Dashboard component with key metrics display
   - Create pipeline visualization with booking status breakdown
   - Implement commission performance charts and summaries
@@ -195,7 +176,6 @@
   - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5_
 
 - [ ] 20. Data integrity and validation implementation
-
   - Implement referential integrity checks for record deletion
   - Add comprehensive input validation on all forms and API endpoints
   - Create audit trail logging for all data modifications
@@ -205,7 +185,6 @@
   - _Requirements: 9.1, 9.2, 9.3, 9.4, 9.5, 8.3_
 
 - [ ] 21. Testing implementation
-
   - Write unit tests for all business logic functions and utilities
   - Create integration tests for all API endpoints with test database
   - Implement component tests for all React components using React Testing Library
